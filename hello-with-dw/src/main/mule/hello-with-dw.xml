@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2ab43b10-3227-4245-b9f2-6cfae96d68fe" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="f2f92b3f-8836-4c15-ae7b-f2e22a954b4b" >
+		<http:request-connection host="craftapi.addissquare.com" port="80"/>
+	</http:request-config>
+	<flow name="helloWorld-with-json" doc:id="c542c8d6-c878-4888-a40a-2372d5ddc8fb" >
+		<http:listener doc:name="Listener" doc:id="9fe13344-cc39-421c-b24d-fcb727ab3645" config-ref="HTTP_Listener_config" path="/dw1"/>
+		<ee:transform doc:name="Transform Message" doc:id="427e6490-0a7c-4955-acad-b406e75bd301" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var myVar = {
+	
+	name:"Michael",age:25
+}
+output application/json
+---
+myVar]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="helloWorld-with-xml" doc:id="3667a562-fc7c-47c1-9e42-989d11344add" >
+		<http:listener doc:name="Listener" doc:id="0d3953e0-689c-4fa0-bb0b-d7f7615e3e6e" config-ref="HTTP_Listener_config" path="/dw2"/>
+		<ee:transform doc:name="Transform Message" doc:id="c68afc0d-4cfe-4ae4-85ec-dfe299a878e4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	"mystring":("helloworld")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Play-Ground" doc:id="934aad6f-3c8c-459d-81be-db35f53fc272" >
+		<http:listener doc:name="Listener" doc:id="4db017b8-3823-4f75-b1cd-58e2ddc9b4a6" config-ref="HTTP_Listener_config" path="/dw3"/>
+		<ee:transform doc:name="Transform Message" doc:id="a503793a-cd02-46e2-85b9-0fb3e6bea148" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+[
+   { 
+     Id: 101,
+     title:  upper("world"),
+     price: "19.99"
+  },
+  {
+  	 Id: 102,
+     title: upper("iopAjP"),
+     price: "18.99"
+  }
+  ,
+  {
+  	 Id: 103,
+     title: capitalize("jhiAjP"),
+     price: "18.99"
+  }
+  ,
+  {
+  	 Id: 104,
+     title: "bhBjP",
+     price: "18.99"
+  }
+  ,
+  {
+  	 Id: 105,
+     title: "cfAjP",
+     price: "18.99"
+  }
+  ]
+  ]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="Data" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	name:  "Michael",
+	phone: "0916182957"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="hello-with-dwFlow" doc:id="0d2f051a-249b-4701-97d1-4a07b1cd402b" >
+		<http:listener doc:name="Listener" doc:id="d4f57f35-2853-4eda-ac38-564e31025528" config-ref="HTTP_Listener_config" path="/dw4"/>
+		<ee:transform doc:name="Transform Message" doc:id="ba74f3d5-2a0b-4286-9bc1-22a6f16865dc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	version: mule.version,
+	flow: flow.name
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="hello-with-dwFlow1" doc:id="24b4f9cf-e81c-4705-aedc-08e40623c09f" >
+		<http:listener doc:name="Listener" doc:id="ea9a8b33-71ba-4b6d-b164-136159ba76c0" config-ref="HTTP_Listener_config" path="/users"/>
+		<http:request method="GET" doc:name="GET/ Date Fron Craft API / GET All User Data" doc:id="78de5a99-8f41-4bec-903b-4ee8381ead97" config-ref="HTTP_Request_configuration" path="/userapi"/>
+		<ee:transform doc:name="Transform Message" doc:id="b99cfc95-3da9-4cc5-87a2-5c7be84e3725" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+payload map(val, index)-> {
+    "Name": upper(val.candidate_name),
+    "ID": val.id
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="hello-with-dwFlow2" doc:id="ffa81356-3e3b-4f82-aa4e-a26f9e2af11c" >
+		<http:listener doc:name="Listener" doc:id="a6cbf3ba-f98d-424f-a5ad-42f4b7b29754" config-ref="HTTP_Listener_config" path="/parsUser"/>
+		<ee:transform doc:name="Transform Message" doc:id="92a56ec4-174e-43d4-9467-328b2d28c2b2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
